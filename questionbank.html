@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #eef4ff;
+        }
+
+        .add-question {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-question:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Question Bank</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Question</th>
+                    <th>Options</th>
+                    <th>Correct Answer</th>
+                </tr>
+            </thead>
+            <tbody id="questionTableBody">
+                <!-- Questions will be dynamically loaded here -->
+            </tbody>
+        </table>
+        <button class="add-question" onclick="redirectToCreateQuestion()">Add New Question</button>
+        <button class="add-question" onclick="toggleDeleteMode()">Delete Question</button>
+        <button class="add-question" onclick="deleteSelectedQuestions()" style="display: none;">Delete Selected Questions</button>
+    </div>
+
+    <script>
+        let deleteMode = false;
+
+        function toggleDeleteMode() {
+            deleteMode = !deleteMode;
+            const checkboxes = document.querySelectorAll("#questionTableBody input[type='checkbox']");
+            const deleteButton = document.querySelector("button[onclick='toggleDeleteMode()']");
+            const deleteSelectedButton = document.querySelector("button[onclick='deleteSelectedQuestions()']");
+
+            checkboxes.forEach(checkbox => {
+                checkbox.style.display = deleteMode ? "inline-block" : "none";
+            });
+
+            if (deleteMode) {
+                deleteButton.style.display = "none";
+                deleteSelectedButton.style.display = "block";
+            } else {
+                deleteButton.style.display = "block";
+                deleteSelectedButton.style.display = "none";
+                checkboxes.forEach(checkbox => checkbox.checked = false); // Uncheck all
+            }
+        }
+
+        async function loadQuestions() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/questions");
+                const questions = await response.json();
+
+                const tableBody = document.getElementById("questionTableBody");
+                tableBody.innerHTML = "";
+
+                questions.forEach((q, index) => {
+                    const row = document.createElement("tr");
+
+                    const selectCell = document.createElement("td");
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.value = q.id; // Use question ID for deletion
+                    checkbox.style.display = "none"; // Initially hidden
+                    selectCell.appendChild(checkbox);
+
+                    const questionCell = document.createElement("td");
+                    questionCell.textContent = q.question;
+
+                    const optionsCell = document.createElement("td");
+                    optionsCell.textContent = q.options;
+
+                    const correctAnswerCell = document.createElement("td");
+                    correctAnswerCell.textContent = q.correctAnswer;
+
+                    row.appendChild(selectCell);
+                    row.appendChild(questionCell);
+                    row.appendChild(optionsCell);
+                    row.appendChild(correctAnswerCell);
+
+                    tableBody.appendChild(row);
+                });
+            } catch (err) {
+                console.error("Error loading questions:", err);
+                alert("Failed to load questions.");
+            }
+        }
+
+        async function deleteSelectedQuestions() {
+            const checkboxes = document.querySelectorAll("#questionTableBody input[type='checkbox']:checked");
+            const selectedQuestions = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            if (selectedQuestions.length === 0) {
+                alert("Please select at least one question to delete.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/delete_question", {
+                    method: "DELETE", // Changed from POST to DELETE
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ question_ids: selectedQuestions })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert("Selected questions deleted successfully.");
+                    loadQuestions(); // Refresh the question list
+                } else {
+                    alert("Failed to delete questions: " + result.message);
+                }
+            } catch (err) {
+                console.error("Error deleting questions:", err);
+                alert("An error occurred while deleting the questions.");
+            }
+        }
+        document.addEventListener("DOMContentLoaded", loadQuestions);
+
+        function redirectToCreateQuestion() {
+            window.location.href = 'cq.html';
+        }
+    </script>
+</body>
+</html>

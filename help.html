@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        .help-section {
+            margin-bottom: 20px;
+        }
+
+        .help-section h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .help-section p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .contact-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .contact-link:hover {
+            color: #0056b3;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .faq-item:hover {
+            text-decoration: underline;
+        }
+
+        .answer {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .popup-content h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .popup-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            text-align: left;
+        }
+
+        .popup-content ul li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .popup-content button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .popup-content button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Help & Support</h2>
+        <div class="help-section">
+            <h3>Frequently Asked Questions</h3>
+            <div>
+                <p class="faq-item" onclick="toggleAnswer('faq1')">How do I take a test?</p>
+                <p id="faq1" class="answer">Navigate to the "Take Test" section from the dashboard menu. Select the desired test and click "Start Test." Follow the instructions to complete it.</p>
+            </div>
+            <div>
+                <p class="faq-item" onclick="toggleAnswer('faq2')">How can I view my results?</p>
+                <p id="faq2" class="answer">Go to the "View Results" section in the dashboard menu. You'll see a table listing your previous tests, scores, and test dates. Click "View Details" for more information.</p>
+            </div>
+            <div>
+                <p class="faq-item" onclick="toggleAnswer('faq3')">How do I reset my password?</p>
+                <p id="faq3" class="answer">Open the "Settings" section from the dashboard menu, enter a new password under "Change Password," and click "Save Changes." If unable to log in, use the "Forgot Password" option on the login page.</p>
+            </div>
+        </div>
+        <div class="help-section">
+            <h3>Contact Support</h3>
+            <p>If you need further assistance, email us at: 
+                <a href="mailto:support@example.com" class="contact-link">support@example.com</a>
+            </p>
+        </div>
+        <div class="help-section">
+            <h3>Troubleshooting</h3>
+            <p>Having issues with your account or dashboard? Visit our troubleshooting guide 
+                <a href="#" class="contact-link" onclick="showTroubleshootingGuide()">here</a>.
+            </p>
+        </div>
+    </div>
+
+    <div id="popup" class="popup" style="display: none;">
+        <div class="popup-content">
+            <h3>Troubleshooting Guide</h3>
+            <ul>
+                <li>Ensure you have a stable internet connection.</li>
+                <li>Clear your browser cache and cookies.</li>
+                <li>Try accessing the dashboard from a different browser.</li>
+                <li>If the issue persists, contact support at <a href="mailto:support@example.com">support@example.com</a>.</li>
+            </ul>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnswer(id) {
+            const answer = document.getElementById(id);
+            if (answer.style.display === "none" || !answer.style.display) {
+                answer.style.display = "block";
+            } else {
+                answer.style.display = "none";
+            }
+        }
+
+        function showTroubleshootingGuide() {
+            const popup = document.getElementById("popup");
+            popup.style.display = "block";
+        }
+
+        function closePopup() {
+            const popup = document.getElementById("popup");
+            popup.style.display = "none";
+        }
+    </script>
+</body>
+</html>

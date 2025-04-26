@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .sidebar {
+      background-color: rgba(255, 255, 255, 0.6);
+      width: 250px;
+      height: 100%;
+      position: fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar h2 {
+      margin-bottom: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #333;
+      font-size: 16px;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      text-align: center;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .main-content {
+      margin-left: 270px;
+      padding: 20px;
+      flex: 1;
+    }
+
+    .section {
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .section h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    select, input[type="date"] {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .download-btn {
+      display: block;
+      margin: 0 auto;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .download-btn:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Teacher Menu</h2>
+    <a href="cq.html">Create Questions</a>
+    <a href="rr.html">Review Results</a>
+    <a href="rep.html">Reports</a>
+    <a href="#" id="logout">Logout</a>
+  </div>
+
+  <div class="main-content">
+    <div class="section">
+      <h3>Exam Performance Reports</h3>
+
+      <!-- Filters -->
+      <div class="filters">
+        <select>
+          <option value="">All Subjects</option>
+          <option>Mathematics</option>
+          <option>Physics</option>
+          <option>Chemistry</option>
+        </select>
+
+        <input type="date" />
+      </div>
+
+      <!-- Report Table -->
+      <table>
+        <thead>
+          <tr>
+            <th>Exam</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Avg Score</th>
+            <th>Highest Score</th>
+            <th>Lowest Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Midterm 1</td>
+            <td>Mathematics</td>
+            <td>2025-04-20</td>
+            <td>76%</td>
+            <td>98%</td>
+            <td>42%</td>
+          </tr>
+          <tr>
+            <td>Midterm 1</td>
+            <td>Physics</td>
+            <td>2025-04-20</td>
+            <td>82%</td>
+            <td>100%</td>
+            <td>58%</td>
+          </tr>
+          <tr>
+            <td>Midterm 1</td>
+            <td>Chemistry</td>
+            <td>2025-04-20</td>
+            <td>70%</td>
+            <td>91%</td>
+            <td>33%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button class="download-btn">Download Report</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("logout").addEventListener("click", function (event) {
+      event.preventDefault();
+      window.location.href = "dbms.html";
+    });
+
+    // Future: Hook the download button to a real backend call if needed
+  </script>
+</body>
+</html>

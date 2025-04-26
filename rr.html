@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Review Results</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .sidebar {
+      background-color: rgba(255, 255, 255, 0.6);
+      width: 250px;
+      height: 100%;
+      position: fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar h2 {
+      margin-bottom: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #333;
+      font-size: 16px;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      text-align: center;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .main-content {
+      margin-left: 270px;
+      padding: 20px;
+      flex: 1;
+    }
+
+    .section {
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .section h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Teacher Menu</h2>
+    <a href="cq.html">Create Questions</a>
+    <a href="rr.html">Review Results</a>
+    <a href="rep.html">Reports</a>
+    <a href="#" id="logout">Logout</a>
+  </div>
+
+  <div class="main-content">
+    <div class="section">
+      <h3>Review Results</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Subject</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+          <tr>
+            <td>Ananya Sharma</td>
+            <td>Mathematics</td>
+            <td>92</td>
+            <td>Pending</td>
+            <td><button class="btn" onclick="markReviewed(this)">Mark as Reviewed</button></td>
+          </tr>
+          <tr>
+            <td>Rohit Verma</td>
+            <td>Physics</td>
+            <td>88</td>
+            <td>Pending</td>
+            <td><button class="btn" onclick="markReviewed(this)">Mark as Reviewed</button></td>
+          </tr>
+          <tr>
+            <td>Meera Jain</td>
+            <td>Chemistry</td>
+            <td>79</td>
+            <td>Reviewed</td>
+            <td><button class="btn" disabled>Reviewed</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function markReviewed(button) {
+      const row = button.parentElement.parentElement;
+      row.cells[3].textContent = 'Reviewed';
+      button.textContent = 'Reviewed';
+      button.disabled = true;
+      button.style.backgroundColor = '#6c757d';
+    }
+
+    document.getElementById("logout").addEventListener("click", function (event) {
+      event.preventDefault();
+      window.location.href = "dbms.html";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Results</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.7); /* Slight opacity for consistency */
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Elegant shadow */
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        td {
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.1); /* Hover color matching theme */
+        }
+
+        .action-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+        }
+
+        .action-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.05); /* Slight scaling effect */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Test Results</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Test Name</th>
+                    <th>Date</th>
+                    <th>Score</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function viewDetails(testName) {
+            window.location.href = `view_result.html?test_name=${encodeURIComponent(testName)}`;
+        }
+
+        async function loadResults() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/results");
+                const results = await response.json();
+
+                const tableBody = document.querySelector("tbody");
+                tableBody.innerHTML = ""; // Clear existing rows
+
+                results.forEach(result => {
+                    const row = document.createElement("tr");
+
+                    const testNameCell = document.createElement("td");
+                    testNameCell.textContent = result.test_name;
+
+                    const dateCell = document.createElement("td");
+                    dateCell.textContent = new Date(result.submission_date).toLocaleDateString();
+
+                    const scoreCell = document.createElement("td");
+                    scoreCell.textContent = `${result.percentage.toFixed(2)}%`;
+
+                    const actionCell = document.createElement("td");
+                    const viewButton = document.createElement("button");
+                    viewButton.className = "action-btn";
+                    viewButton.textContent = "View Details";
+                    viewButton.onclick = () => viewDetails(result.test_name);
+                    actionCell.appendChild(viewButton);
+
+                    row.appendChild(testNameCell);
+                    row.appendChild(dateCell);
+                    row.appendChild(scoreCell);
+                    row.appendChild(actionCell);
+
+                    tableBody.appendChild(row);
+                });
+            } catch (err) {
+                console.error("Error loading results:", err);
+                alert("Failed to load results.");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadResults);
+    </script>
+</body>
+</html>

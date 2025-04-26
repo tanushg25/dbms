@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Announcements</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .announcement-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .announcement-form input,
+        .announcement-form textarea,
+        .announcement-form button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .announcement-form textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        .announcement-form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .announcement-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Post Announcements</h1>
+        
+        <!-- Create Announcement Section -->
+        <div class="announcement-form">
+            <input type="text" id="announcementTitle" placeholder="Enter announcement title" required>
+            <textarea id="announcementMessage" placeholder="Enter announcement message"></textarea>
+            <button onclick="postAnnouncement()">Post Announcement</button>
+        </div>
+
+        <!-- Announcements Table -->
+        <div class="table-container">
+            <h2>Recent Announcements</h2>
+            <table id="announcementsTable">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sample Announcement -->
+                    <tr>
+                        <td>System Update</td>
+                        <td>The system will undergo maintenance on Friday.</td>
+                        <td>2025-04-24</td>
+                        <td>
+                            <button class="btn btn-delete" onclick="deleteAnnouncement(this)">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function postAnnouncement() {
+            const title = document.getElementById("announcementTitle").value;
+            const message = document.getElementById("announcementMessage").value;
+
+            if (title && message) {
+                const table = document.getElementById("announcementsTable").getElementsByTagName("tbody")[0];
+                const newRow = table.insertRow();
+
+                const today = new Date().toISOString().split('T')[0]; // Get today's date
+
+                newRow.innerHTML = `
+                    <td>${title}</td>
+                    <td>${message}</td>
+                    <td>${today}</td>
+                    <td>
+                        <button class="btn btn-delete" onclick="deleteAnnouncement(this)">Delete</button>
+                    </td>
+                `;
+
+                // Clear input fields
+                document.getElementById("announcementTitle").value = "";
+                document.getElementById("announcementMessage").value = "";
+            } else {
+                alert("Please fill in both the title and the message.");
+            }
+        }
+
+        function deleteAnnouncement(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+    </script>
+</body>
+</html>

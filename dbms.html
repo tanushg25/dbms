@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        .login-box {
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 60px;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input, select, button {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 220px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: all 0.3s ease; /* Smooth transitions */
+        }
+        input:hover, select:hover {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        select.small-select {
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <select id="facultySelect" name="Faculty" class="small-select">
+                <option value="student" selected>Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button type="submit">Log In</button>
+        </form>
+    </div>
+    <script>
+        // JavaScript to handle role-based redirection with validation
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const role = document.getElementById("facultySelect").value;
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password, role })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    if (result.role === "student") {
+                        window.location.href = "student_dashboard.html";
+                    } else if (result.role === "teacher") {
+                        window.location.href = "teacher_dashboard.html";
+                    } else if (result.role === "admin") {
+                        window.location.href = "admin_dashboard.html";
+                    }
+                } else {
+                    alert("Invalid username or password.");
+                }
+            } catch (err) {
+                console.error("Login error:", err);
+                alert("Something went wrong. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Test</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .question p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin-bottom: 10px;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-container {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .result-container h3 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .result-container p {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .result-container .test-name {
+            color: #007bff;
+        }
+
+        .result-container .score {
+            color: #28a745;
+        }
+
+        .result-container .percentage {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="testTitle">Take Test</h2>
+        <form id="testForm">
+            <div id="questionsContainer">
+                <!-- Questions will be dynamically loaded here -->
+            </div>
+            <button type="submit" class="submit-btn">Submit</button>
+        </form>
+    </div>
+    <script>
+        async function loadTestQuestions() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const testName = urlParams.get("test_name");
+
+            if (!testName) {
+                alert("Test name is missing!");
+                return;
+            }
+
+            document.getElementById("testTitle").textContent = `Test: ${testName}`;
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/test_questions?test_name=${encodeURIComponent(testName)}`);
+                const questions = await response.json();
+
+                const container = document.getElementById("questionsContainer");
+                container.innerHTML = "";
+
+                questions.forEach((q, index) => {
+                    const questionDiv = document.createElement("div");
+                    questionDiv.className = "question";
+
+                    const questionText = document.createElement("p");
+                    questionText.textContent = `${index + 1}. ${q.question}`;
+                    questionDiv.appendChild(questionText);
+
+                    const optionsList = document.createElement("ul");
+                    optionsList.className = "options";
+
+                    q.options.forEach(option => {
+                        const optionItem = document.createElement("li");
+
+                        const optionInput = document.createElement("input");
+                        optionInput.type = "radio";
+                        optionInput.name = `question${index}`;
+                        optionInput.value = option.text;
+
+                        const optionLabel = document.createElement("label");
+                        optionLabel.textContent = `${option.label}) ${option.text}`;
+
+                        optionItem.appendChild(optionInput);
+                        optionItem.appendChild(optionLabel);
+                        optionsList.appendChild(optionItem);
+                    });
+
+                    questionDiv.appendChild(optionsList);
+                    container.appendChild(questionDiv);
+                });
+            } catch (err) {
+                console.error("Error loading test questions:", err);
+                alert("Failed to load test questions.");
+            }
+        }
+
+        async function displayResult(result) {
+            const resultContainer = document.createElement("div");
+            resultContainer.className = "result-container";
+
+            resultContainer.innerHTML = `
+                <h3>Test Result</h3>
+                <p class="test-name">Test Name: ${result.test_name}</p>
+                <p class="score">Score: ${result.score} / ${result.total_questions}</p>
+                <p class="percentage">Percentage: ${result.percentage.toFixed(2)}%</p>
+            `;
+
+            const container = document.querySelector(".container");
+            container.style.transition = "opacity 0.3s ease-in-out";
+            container.style.opacity = "0";
+
+            setTimeout(() => {
+                container.innerHTML = "";
+                container.appendChild(resultContainer);
+                container.style.opacity = "1";
+            }, 300);
+        }
+
+        document.getElementById("testForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const answers = {};
+            for (let [key, value] of formData.entries()) {
+                answers[key] = value;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/submit_test", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        test_name: new URLSearchParams(window.location.search).get("test_name"),
+                        answers: answers
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    displayResult(result.result);
+                } else {
+                    alert("Failed to submit test: " + result.message);
+                }
+            } catch (err) {
+                console.error("Error submitting test:", err);
+                alert("An error occurred while submitting the test.");
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", loadTestQuestions);
+    </script>
+</body>
+</html>

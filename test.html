@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Test</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .test-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .test-item:hover {
+            background-color: #eef4ff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .test-name {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .start-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .start-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading {
+            font-size: 18px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Available Tests</h2>
+        <ul class="test-list">
+            <li class="loading">Loading tests...</li>
+        </ul>
+    </div>
+    <script>
+        async function loadAvailableTests() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/available_tests");
+                const tests = await response.json();
+
+                const testList = document.querySelector(".test-list");
+                testList.innerHTML = ""; // Clear initial loading message
+
+                if (tests.length === 0) {
+                    const noTestsMessage = document.createElement("li");
+                    noTestsMessage.className = "test-item";
+                    noTestsMessage.textContent = "No tests available at the moment.";
+                    testList.appendChild(noTestsMessage);
+                    return;
+                }
+
+                tests.forEach(test => {
+                    const testItem = document.createElement("li");
+                    testItem.className = "test-item";
+
+                    const testName = document.createElement("span");
+                    testName.className = "test-name";
+                    testName.textContent = test.test_name;
+
+                    const startButton = document.createElement("button");
+                    startButton.className = "start-btn";
+                    startButton.textContent = "Start Test";
+                    startButton.onclick = () => startTest(test.test_name);
+
+                    testItem.appendChild(testName);
+                    testItem.appendChild(startButton);
+                    testList.appendChild(testItem);
+                });
+            } catch (err) {
+                console.error("Error loading available tests:", err);
+                const testList = document.querySelector(".test-list");
+                testList.innerHTML = "<li class='test-item'>Failed to load tests. Please try again later.</li>";
+            }
+        }
+
+        function startTest(testName) {
+            // Redirect to the test interface with the test name as a query parameter
+            window.location.href = `take_test.html?test_name=${encodeURIComponent(testName)}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", loadAvailableTests);
+    </script>
+</body>
+</html>

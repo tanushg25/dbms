@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Settings</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .settings-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-item h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .settings-item button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .settings-item button:hover {
+            background-color: #0056b3;
+        }
+
+        .status-message {
+            text-align: center;
+            color: green;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>System Settings</h1>
+
+        <!-- Settings Section -->
+        <div class="settings-section">
+            <div class="settings-item">
+                <h3>Enable Maintenance Mode</h3>
+                <button onclick="enableMaintenance()">Activate</button>
+            </div>
+            <div class="settings-item">
+                <h3>Initiate Backup</h3>
+                <button onclick="initiateBackup()">Start Backup</button>
+            </div>
+            <div class="settings-item">
+                <h3>Restore System</h3>
+                <button onclick="restoreSystem()">Restore</button>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="status-message"></div>
+    </div>
+
+    <script>
+        function enableMaintenance() {
+            const confirmation = confirm("Are you sure you want to activate maintenance mode?");
+            if (confirmation) {
+                document.getElementById("statusMessage").textContent = "Maintenance mode activated successfully!";
+                alert("The system is now in maintenance mode.");
+                // Backend integration logic for maintenance mode goes here
+            }
+        }
+
+        function initiateBackup() {
+            const confirmation = confirm("Are you sure you want to start a backup?");
+            if (confirmation) {
+                document.getElementById("statusMessage").textContent = "Backup initiated successfully!";
+                alert("The system backup process has started.");
+                // Backend integration logic for backup goes here
+            }
+        }
+
+        function restoreSystem() {
+            const confirmation = confirm("Are you sure you want to restore the system?");
+            if (confirmation) {
+                document.getElementById("statusMessage").textContent = "System restored successfully!";
+                alert("The system has been restored.");
+                // Backend integration logic for system restore goes here
+            }
+        }
+    </script>
+</body>
+</html>

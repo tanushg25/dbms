@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Settings</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .status-message {
+            color: green;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Student Settings</h2>
+        <form id="settingsForm">
+            <div>
+                <label for="username">Update Username</label>
+                <input type="text" id="username" placeholder="Enter new username">
+            </div>
+
+            <div>
+                <label for="password">Change Password</label>
+                <input type="password" id="password" placeholder="Enter new password">
+            </div>
+            <div>
+                <label for="examPreferences">Exam Preferences</label>
+                <select id="examPreferences">
+                    <option value="timed" selected>Timed Exams</option>
+                    <option value="untimed">Untimed Exams</option>
+                </select>
+            </div>
+            <div>
+                <label for="notifications">Notification Settings</label>
+                <select id="notifications">
+                    <option value="enable" selected>Enable Notifications</option>
+                    <option value="disable">Disable Notifications</option>
+                </select>
+            </div>
+            <button type="submit">Save Settings</button>
+        </form>
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById("settingsForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const examPreferences = document.getElementById("examPreferences").value;
+            const notifications = document.getElementById("notifications").value;
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/update_settings", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password, examPreferences, notifications })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById("statusMessage").textContent = "Settings updated successfully!";
+                } else {
+                    document.getElementById("statusMessage").textContent = "Failed to update settings: " + result.message;
+                }
+            } catch (err) {
+                console.error("Error updating settings:", err);
+                document.getElementById("statusMessage").textContent = "An error occurred while updating settings.";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Question Creator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        textarea {
+            height: 80px;
+            resize: none;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Create a Question</h2>
+        <form>
+            <label for="question">Question Text</label>
+            <textarea id="question" name="question" placeholder="Enter the question text here..."></textarea>
+
+            <label for="option1">Option 1</label>
+            <input type="text" id="option1" name="option1" placeholder="Enter the first option">
+
+            <label for="option2">Option 2</label>
+            <input type="text" id="option2" name="option2" placeholder="Enter the second option">
+
+            <label for="option3">Option 3</label>
+            <input type="text" id="option3" name="option3" placeholder="Enter the third option">
+
+            <label for="option4">Option 4</label>
+            <input type="text" id="option4" name="option4" placeholder="Enter the fourth option">
+
+            <label for="answer">Correct Answer (1-4)</label>
+            <input type="text" id="answer" name="answer" placeholder="Enter the correct option number">
+
+            <label for="duration">Duration (minutes)</label>
+            <input type="number" id="duration" name="duration" placeholder="Enter time allowed for this question">
+
+            <label for="marks">Marks</label>
+            <input type="number" id="marks" name="marks" placeholder="Enter marks for this question">
+
+            <button type="submit">Save Question</button>
+        </form>
+    </div>
+    <script>
+        document.querySelector("form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+        
+            const question = document.getElementById("question").value;
+            const option1 = document.getElementById("option1").value;
+            const option2 = document.getElementById("option2").value;
+            const option3 = document.getElementById("option3").value;
+            const option4 = document.getElementById("option4").value;
+            const answer = document.getElementById("answer").value;
+            const duration = document.getElementById("duration").value;
+            const marks = document.getElementById("marks").value;
+        
+            const data = { question, option1, option2, option3, option4, answer, duration, marks };
+        
+            try {
+                const response = await fetch("http://127.0.0.1:5000/add-question", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+        
+                const result = await response.json();
+                if (result.success) {
+                    alert("✅ Question saved!");
+                } else {
+                    alert("❌ Failed to save question: " + result.message);
+                }
+            } catch (err) {
+                alert("⚠️ Error submitting question");
+                console.error(err);
+            }
+        });
+    </script>        
+</body>
+</html>
