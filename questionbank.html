@@ -157,36 +157,36 @@
         }
 
         async function deleteSelectedQuestions() {
-            const checkboxes = document.querySelectorAll("#questionTableBody input[type='checkbox']:checked");
-            const selectedQuestions = Array.from(checkboxes).map(checkbox => checkbox.value);
+    const checkboxes = document.querySelectorAll("#questionTableBody input[type='checkbox']:checked");
+    const selectedQuestions = Array.from(checkboxes).map(checkbox => checkbox.value);
 
-            if (selectedQuestions.length === 0) {
-                alert("Please select at least one question to delete.");
-                return;
-            }
+    if (selectedQuestions.length === 0) {
+        alert("Please select at least one question to delete.");
+        return;
+    }
 
-            try {
-                const response = await fetch("http://127.0.0.1:5000/delete_question", {
-                    method: "DELETE", // Changed from POST to DELETE
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ question_ids: selectedQuestions })
-                });
+    try {
+        const response = await fetch("http://127.0.0.1:5000/delete_question", {
+            method: "POST",  // ✅ Not DELETE, use POST
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ question_ids: selectedQuestions })
+        });
 
-                const result = await response.json();
+        const result = await response.json();
 
-                if (result.success) {
-                    alert("Selected questions deleted successfully.");
-                    loadQuestions(); // Refresh the question list
-                } else {
-                    alert("Failed to delete questions: " + result.message);
-                }
-            } catch (err) {
-                console.error("Error deleting questions:", err);
-                alert("An error occurred while deleting the questions.");
-            }
+        if (result.success) {
+            alert("Selected questions deleted successfully.");
+            loadQuestions(); // Refresh the question list
+        } else {
+            alert("Failed to delete questions: " + result.message);
         }
+    } catch (err) {
+        console.error("Error deleting questions:", err);
+        alert("An error occurred while deleting the questions.");
+    }
+}
         document.addEventListener("DOMContentLoaded", loadQuestions);
 
         function redirectToCreateQuestion() {

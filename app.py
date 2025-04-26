@@ -102,7 +102,7 @@ def login():
 def get_questions():
     try:
         cursor.execute("""
-            SELECT QuestionText, Option1, Option2, Option3, Option4, CorrectAnswer
+            SELECT QuestionID, QuestionText, Option1, Option2, Option3, Option4, CorrectAnswer
             FROM question
         """)
         rows = cursor.fetchall()
@@ -112,6 +112,7 @@ def get_questions():
             options = f"A) {row['Option1']}, B) {row['Option2']}, C) {row['Option3']}, D) {row['Option4']}"
             correct = f"{row['CorrectAnswer']}"
             questions.append({
+                "id": row["QuestionID"],    # ✅ Add id properly
                 "question": row["QuestionText"],
                 "options": options,
                 "correctAnswer": correct
@@ -121,6 +122,7 @@ def get_questions():
     except Exception as e:
         print("❌ Error fetching questions:", e)
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/launch_test", methods=["POST"])
 def launch_test():
@@ -373,23 +375,25 @@ def student_dashboard_data():
         print("❌ Error loading dashboard data:", e)
         return jsonify({"error": str(e)}), 500
 
-@app.route("/delete_question", methods=["POST"])
+@app.route("/delete_question", methods=["POST"])  # ✅ Keep POST, not DELETE
 def delete_question():
     try:
         data = request.get_json()
-        question_id = data.get("question_id")
+        question_ids = data.get("question_ids")
 
-        if not question_id:
-            return jsonify({"success": False, "message": "Question ID is required."}), 400
+        if not question_ids or not isinstance(question_ids, list):
+            return jsonify({"success": False, "message": "A list of question IDs is required."}), 400
 
-        # Delete the question from the database
-        cursor.execute("DELETE FROM question WHERE QuestionID = %s", (question_id,))
+        format_strings = ','.join(['%s'] * len(question_ids))
+        query = f"DELETE FROM question WHERE QuestionID IN ({format_strings})"
+
+        cursor.execute(query, tuple(question_ids))
         db.commit()
 
-        return jsonify({"success": True, "message": "Question deleted successfully."})
+        return jsonify({"success": True, "message": "Selected questions deleted successfully."})
     except Exception as e:
-        print("❌ Error deleting question:", e)
-        return jsonify({"success": False, "message": "An error occurred while deleting the question."}), 500
+        print("❌ Error deleting questions:", e)
+        return jsonify({"success": False, "message": f"An error occurred: {e}"}), 500
 
 # ✅ This stays at the bottom
 if __name__ == "__main__":
