@@ -221,29 +221,163 @@
         });
 
         function launchTest() {
-            const testName = prompt("Enter the name of the test to launch:");
-            if (testName) {
+            // Create a popup container
+            const popup = document.createElement("div");
+            popup.style.position = "fixed";
+            popup.style.top = "50%";
+            popup.style.left = "50%";
+            popup.style.transform = "translate(-50%, -50%)";
+            popup.style.backgroundColor = "white";
+            popup.style.padding = "20px";
+            popup.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+            popup.style.zIndex = "1000";
+            // Style the popup for better appearance
+            popup.style.borderRadius = "10px";
+            popup.style.width = "400px";
+            popup.style.fontFamily = "Arial, sans-serif";
+
+            // Add a title to the popup
+            const title = document.createElement("h3");
+            title.textContent = "Launch Test";
+            title.style.marginBottom = "15px";
+            title.style.textAlign = "center";
+            title.style.color = "#333";
+            popup.appendChild(title);
+
+            // Add input for test name
+            const testNameInput = document.createElement("input");
+            testNameInput.type = "text";
+            testNameInput.placeholder = "Enter test name";
+            testNameInput.style.display = "block";
+            testNameInput.style.marginBottom = "10px";
+            testNameInput.style.width = "100%";
+            // Style the test name input
+            testNameInput.style.padding = "10px";
+            testNameInput.style.border = "1px solid #ccc";
+            testNameInput.style.borderRadius = "5px";
+            testNameInput.style.boxSizing = "border-box";
+            popup.appendChild(testNameInput);
+
+            // Add a container for question checkboxes
+            const questionContainer = document.createElement("div");
+            questionContainer.style.maxHeight = "200px";
+            questionContainer.style.overflowY = "auto";
+            questionContainer.style.marginBottom = "10px";
+            // Style the question container
+            questionContainer.style.border = "1px solid #ccc";
+            questionContainer.style.borderRadius = "5px";
+            questionContainer.style.padding = "10px";
+            questionContainer.style.backgroundColor = "#f9f9f9";
+            popup.appendChild(questionContainer);
+
+            // Fetch questions to populate the container
+            fetch("http://127.0.0.1:5000/questions")
+                .then(response => response.json())
+                .then(questions => {
+                    questions.forEach(question => {
+                        const checkbox = document.createElement("input");
+                        checkbox.type = "checkbox";
+                        checkbox.value = question.id;
+
+                        const label = document.createElement("label");
+                        label.textContent = question.question;
+                        label.style.display = "block";
+
+                        const wrapper = document.createElement("div");
+                        wrapper.appendChild(checkbox);
+                        wrapper.appendChild(label);
+
+                        questionContainer.appendChild(wrapper);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching questions:", error);
+                    alert("Failed to load questions.");
+                });
+
+            // Add submit button
+            const submitButton = document.createElement("button");
+            submitButton.textContent = "Launch Test";
+            submitButton.style.display = "block";
+            submitButton.style.marginTop = "10px";
+            submitButton.onclick = () => {
+                const testName = testNameInput.value;
+                const selectedQuestions = Array.from(questionContainer.querySelectorAll("input[type='checkbox']:checked"))
+                    .map(checkbox => checkbox.value);
+
+                if (!testName) {
+                    alert("Please enter a test name.");
+                    return;
+                }
+
+                if (selectedQuestions.length === 0) {
+                    alert("Please select at least one question.");
+                    return;
+                }
+
                 fetch("http://127.0.0.1:5000/launch_test", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ test_name: testName })
+                    body: JSON.stringify({ test_name: testName, question_ids: selectedQuestions })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Test launched successfully!");
-                    } else {
-                        alert("Failed to launch test: " + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error launching test:", error);
-                    alert("An error occurred while launching the test.");
-                });
-            }
-        }
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Test launched successfully!");
+                            document.body.removeChild(popup);
+                        } else {
+                            alert("Failed to launch test: " + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error launching test:", error);
+                        alert("An error occurred while launching the test.");
+                    });
+            };
+            // Style the submit button
+            submitButton.style.padding = "10px 20px";
+            submitButton.style.backgroundColor = "#007bff";
+            submitButton.style.color = "white";
+            submitButton.style.border = "none";
+            submitButton.style.borderRadius = "5px";
+            submitButton.style.cursor = "pointer";
+            submitButton.style.width = "100%";
+            submitButton.style.marginBottom = "10px";
+            submitButton.style.fontSize = "16px";
+            submitButton.style.transition = "background-color 0.3s ease";
+            submitButton.onmouseover = () => submitButton.style.backgroundColor = "#0056b3";
+            submitButton.onmouseout = () => submitButton.style.backgroundColor = "#007bff";
+            popup.appendChild(submitButton);
+
+            // Add cancel button
+            const cancelButton = document.createElement("button");
+            cancelButton.textContent = "Cancel";
+            cancelButton.style.display = "block";
+            cancelButton.style.marginTop = "10px";
+            cancelButton.onclick = () => {
+                document.body.removeChild(popup);
+            };
+            // Style the cancel button
+            cancelButton.style.padding = "10px 20px";
+            cancelButton.style.backgroundColor = "#dc3545";
+            cancelButton.style.color = "white";
+            cancelButton.style.border = "none";
+            cancelButton.style.borderRadius = "5px";
+            cancelButton.style.cursor = "pointer";
+            cancelButton.style.width = "100%";
+            cancelButton.style.fontSize = "16px";
+            cancelButton.style.transition = "background-color 0.3s ease";
+            cancelButton.onmouseover = () => cancelButton.style.backgroundColor = "#a71d2a";
+            cancelButton.onmouseout = () => cancelButton.style.backgroundColor = "#dc3545";
+            popup.appendChild(cancelButton);
+
+            // Append popup to the body
+            document.body.appendChild(popup);
+}
+
+document.addEventListener("DOMContentLoaded", loadExams);
     </script>
 </body>
 </html>

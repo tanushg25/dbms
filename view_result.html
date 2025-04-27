@@ -89,59 +89,65 @@
         <div id="detailsContainer"></div>
     </div>
 
-<script>
-    async function loadTestDetails() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const testName = urlParams.get("test_name");
-
-        if (!testName) {
-            alert("Test name missing in URL!");
-            return;
-        }
-
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/test_details?test_name=${encodeURIComponent(testName)}`);
-            const details = await response.json();
-
-            const container = document.getElementById("detailsContainer");
-            container.innerHTML = "";
-
-            // Display error message if present
-            if (details.error) {
-                container.innerHTML = `<p style="color: red;">${details.error}</p>`;
+    <script>
+        async function loadTestDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const testName = urlParams.get("test_name");
+    
+            if (!testName) {
+                alert("Test name missing in URL!");
+                document.getElementById("detailsContainer").innerHTML = "<p style='color: red;'>Test name is missing in the URL. Please try again.</p>";
                 return;
             }
-
-            // Show message if no questions found
-            if (!Array.isArray(details) || details.length === 0) {
-                container.innerHTML = "<p>No questions found for this test.</p>";
-                return;
+    
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/test_details?test_name=${encodeURIComponent(testName)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+    
+                const details = await response.json();
+    
+                const container = document.getElementById("detailsContainer");
+                container.innerHTML = "";
+    
+                // Display error message if present
+                if (details.error) {
+                    container.innerHTML = `<p style="color: red;">${details.error}</p>`;
+                    return;
+                }
+    
+                // Show message if no questions found
+                if (!Array.isArray(details) || details.length === 0) {
+                    container.innerHTML = "<p>No questions found for this test.</p>";
+                    return;
+                }
+    
+                // Render question cards
+                details.forEach((q, index) => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+    
+                    const isCorrect = q.correct_answer.trim().toLowerCase() === q.your_answer.trim().toLowerCase();
+    
+                    card.innerHTML = `
+                        <h4>Question ${index + 1}</h4>
+                        <p><strong>${q.question}</strong></p>
+                        <p><span class="correct">✅ Correct Answer:</span> ${q.correct_answer}</p>
+                        <p><span class="${isCorrect ? 'correct' : 'wrong'}">📝 Your Answer:</span> ${q.your_answer}</p>
+                    `;
+    
+                    container.appendChild(card);
+                });
+    
+            } catch (err) {
+                console.error("Error loading test details:", err);
+                document.getElementById("detailsContainer").innerHTML = "<p style='color: red;'>Failed to load test details. Please try again later.</p>";
             }
-
-            // Render question cards
-            details.forEach((q, index) => {
-                const card = document.createElement("div");
-                card.className = "card";
-
-                const isCorrect = q.correct_answer.trim().toLowerCase() === q.your_answer.trim().toLowerCase();
-
-                card.innerHTML = `
-                    <h4>Question ${index + 1}</h4>
-                    <p><strong>${q.question}</strong></p>
-                    <p><span class="correct">✅ Correct Answer:</span> ${q.correct_answer}</p>
-                    <p><span class="${isCorrect ? 'correct' : 'wrong'}">📝 Your Answer:</span> ${q.your_answer}</p>
-                `;
-
-                container.appendChild(card);
-            });
-
-        } catch (err) {
-            console.error("Error loading test details:", err);
-            document.getElementById("detailsContainer").innerHTML = "<p style='color: red;'>Failed to load test details.</p>";
         }
-    }
-
-    document.addEventListener("DOMContentLoaded", loadTestDetails);
-</script>
+    
+        document.addEventListener("DOMContentLoaded", loadTestDetails);
+    </script>
 </body>
 </html>

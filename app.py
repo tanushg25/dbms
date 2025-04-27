@@ -281,9 +281,6 @@ def get_test_details():
 
         exam_id = exam_row["id"]
 
-        print("Test Name:", test_name)
-        print("Exam ID:", exam_id)
-
         # Fetch questions and correct answers
         cursor.execute("""
             SELECT QuestionID, QuestionText, Option1, Option2, Option3, Option4, CorrectAnswer
@@ -292,9 +289,10 @@ def get_test_details():
         """, (exam_id,))
         questions = cursor.fetchall()
 
-        print("Questions and Correct Answers:", questions)
+        if not questions:
+            return jsonify({"error": "No questions found for this test."}), 404
 
-        # Get student answers from `responses` table (assuming only 1 attempt for now)
+        # Get student answers from `responses` table
         cursor.execute("SELECT answers FROM responses WHERE test_name = %s", (test_name,))
         answer_row = cursor.fetchone()
         if not answer_row:
@@ -302,12 +300,10 @@ def get_test_details():
 
         user_answers = eval(answer_row["answers"])  # Convert string to dict
 
-        print("User Answers:", user_answers)
-
         result = []
         for index, q in enumerate(questions):
             correct = q["CorrectAnswer"]
-            your_answer_index = user_answers.get(f"question{index}", "Not Answered")
+            your_answer_index = user_answers.get(f"question{index + 1}", "Not Answered")
             your_answer = "Not Answered"
             if your_answer_index.isdigit() and 1 <= int(your_answer_index) <= 4:
                 your_answer = [q["Option1"], q["Option2"], q["Option3"], q["Option4"]][int(your_answer_index) - 1]
@@ -317,8 +313,6 @@ def get_test_details():
                 "your_answer": your_answer,
                 "correct_answer": correct
             })
-
-        print("Fetched test details:", result)
 
         return jsonify(result)
     except Exception as e:
