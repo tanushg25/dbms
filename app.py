@@ -112,7 +112,7 @@ def get_questions():
             options = f"A) {row['Option1']}, B) {row['Option2']}, C) {row['Option3']}, D) {row['Option4']}"
             correct = f"{row['CorrectAnswer']}"
             questions.append({
-                "id": row["QuestionID"],    # ✅ Add id properly
+                "id": row["QuestionID"], 
                 "question": row["QuestionText"],
                 "options": options,
                 "correctAnswer": correct
