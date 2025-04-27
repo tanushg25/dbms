@@ -104,6 +104,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="sidebar">
     <h2>Teacher Menu</h2>
@@ -119,53 +120,66 @@
       <table>
         <thead>
           <tr>
-            <th>Student Name</th>
-            <th>Subject</th>
+            <th>Test Name</th>
             <th>Score</th>
-            <th>Status</th>
-            <th>Action</th>
+            <th>Total Questions</th>
+            <th>Percentage</th>
+            <th>Submission Date</th>
           </tr>
         </thead>
         <tbody id="resultsBody">
-          <tr>
-            <td>Ananya Sharma</td>
-            <td>Mathematics</td>
-            <td>92</td>
-            <td>Pending</td>
-            <td><button class="btn" onclick="markReviewed(this)">Mark as Reviewed</button></td>
-          </tr>
-          <tr>
-            <td>Rohit Verma</td>
-            <td>Physics</td>
-            <td>88</td>
-            <td>Pending</td>
-            <td><button class="btn" onclick="markReviewed(this)">Mark as Reviewed</button></td>
-          </tr>
-          <tr>
-            <td>Meera Jain</td>
-            <td>Chemistry</td>
-            <td>79</td>
-            <td>Reviewed</td>
-            <td><button class="btn" disabled>Reviewed</button></td>
-          </tr>
+          <!-- Data will be loaded dynamically -->
         </tbody>
       </table>
     </div>
   </div>
 
   <script>
-    function markReviewed(button) {
-      const row = button.parentElement.parentElement;
-      row.cells[3].textContent = 'Reviewed';
-      button.textContent = 'Reviewed';
-      button.disabled = true;
-      button.style.backgroundColor = '#6c757d';
+    async function loadResults() {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/results");
+        const results = await response.json();
+
+        const tableBody = document.getElementById("resultsBody");
+        tableBody.innerHTML = "";
+
+        results.forEach(result => {
+          const row = document.createElement("tr");
+
+          const testName = document.createElement("td");
+          testName.textContent = result.test_name;
+          row.appendChild(testName);
+
+          const score = document.createElement("td");
+          score.textContent = result.score;
+          row.appendChild(score);
+
+          const totalQuestions = document.createElement("td");
+          totalQuestions.textContent = result.total_questions;
+          row.appendChild(totalQuestions);
+
+          const percentage = document.createElement("td");
+          percentage.textContent = result.percentage.toFixed(2) + "%";
+          row.appendChild(percentage);
+
+          const submissionDate = document.createElement("td");
+          submissionDate.textContent = new Date(result.submission_date).toLocaleString();
+          row.appendChild(submissionDate);
+
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error("Error loading results:", error);
+        alert("Failed to load results.");
+      }
     }
 
-    document.getElementById("logout").addEventListener("click", function (event) {
+    document.getElementById("logout").addEventListener("click", function(event) {
       event.preventDefault();
       window.location.href = "dbms.html";
     });
+
+    document.addEventListener("DOMContentLoaded", loadResults);
   </script>
 </body>
 </html>

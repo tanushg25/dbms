@@ -70,19 +70,6 @@
       color: #333;
     }
 
-    .filters {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-
-    select, input[type="date"] {
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
     table {
       width: 100%;
       border-collapse: collapse;
@@ -106,8 +93,7 @@
 
     .download-btn {
       display: block;
-      margin: 0 auto;
-      margin-top: 20px;
+      margin: 20px auto 0;
       padding: 10px 20px;
       background-color: #28a745;
       color: white;
@@ -122,6 +108,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="sidebar">
     <h2>Teacher Menu</h2>
@@ -135,69 +122,102 @@
     <div class="section">
       <h3>Exam Performance Reports</h3>
 
-      <!-- Filters -->
-      <div class="filters">
-        <select>
-          <option value="">All Subjects</option>
-          <option>Mathematics</option>
-          <option>Physics</option>
-          <option>Chemistry</option>
-        </select>
-
-        <input type="date" />
-      </div>
-
-      <!-- Report Table -->
       <table>
         <thead>
           <tr>
-            <th>Exam</th>
-            <th>Subject</th>
-            <th>Date</th>
-            <th>Avg Score</th>
-            <th>Highest Score</th>
-            <th>Lowest Score</th>
+            <th>Test Name</th>
+            <th>Score</th>
+            <th>Total Questions</th>
+            <th>Percentage</th>
+            <th>Submission Date</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Midterm 1</td>
-            <td>Mathematics</td>
-            <td>2025-04-20</td>
-            <td>76%</td>
-            <td>98%</td>
-            <td>42%</td>
-          </tr>
-          <tr>
-            <td>Midterm 1</td>
-            <td>Physics</td>
-            <td>2025-04-20</td>
-            <td>82%</td>
-            <td>100%</td>
-            <td>58%</td>
-          </tr>
-          <tr>
-            <td>Midterm 1</td>
-            <td>Chemistry</td>
-            <td>2025-04-20</td>
-            <td>70%</td>
-            <td>91%</td>
-            <td>33%</td>
-          </tr>
+        <tbody id="reportBody">
+          <!-- Reports will load here dynamically -->
         </tbody>
       </table>
 
-      <button class="download-btn">Download Report</button>
+      <button class="download-btn" onclick="downloadReport()">Download Report</button>
     </div>
   </div>
 
   <script>
-    document.getElementById("logout").addEventListener("click", function (event) {
+    let reportsData = [];
+
+    async function loadReports() {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/results");
+        reportsData = await response.json();
+
+        const tableBody = document.getElementById("reportBody");
+        tableBody.innerHTML = "";
+
+        reportsData.forEach(report => {
+          const row = document.createElement("tr");
+
+          const testName = document.createElement("td");
+          testName.textContent = report.test_name;
+          row.appendChild(testName);
+
+          const score = document.createElement("td");
+          score.textContent = report.score;
+          row.appendChild(score);
+
+          const totalQuestions = document.createElement("td");
+          totalQuestions.textContent = report.total_questions;
+          row.appendChild(totalQuestions);
+
+          const percentage = document.createElement("td");
+          percentage.textContent = report.percentage.toFixed(2) + "%";
+          row.appendChild(percentage);
+
+          const submissionDate = document.createElement("td");
+          submissionDate.textContent = new Date(report.submission_date).toLocaleString();
+          row.appendChild(submissionDate);
+
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error("Error loading reports:", error);
+        alert("Failed to load reports.");
+      }
+    }
+
+    function downloadReport() {
+      if (reportsData.length === 0) {
+        alert("No data to download.");
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Test Name,Score,Total Questions,Percentage,Submission Date\n";
+
+      reportsData.forEach(report => {
+        const row = [
+          report.test_name,
+          report.score,
+          report.total_questions,
+          report.percentage.toFixed(2) + "%",
+          new Date(report.submission_date).toLocaleString()
+        ].join(",");
+        csvContent += row + "\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "exam_performance_report.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    document.getElementById("logout").addEventListener("click", function(event) {
       event.preventDefault();
       window.location.href = "dbms.html";
     });
 
-    // Future: Hook the download button to a real backend call if needed
+    document.addEventListener("DOMContentLoaded", loadReports);
   </script>
 </body>
 </html>
