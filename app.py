@@ -21,7 +21,8 @@ def add_question():
         data = request.get_json()
 
         # For now, we'll associate all questions with ExamID = 1
-        exam_id = 1
+        # exam_id = 1
+
 
         question_text = data["question"]
         option1 = data["option1"]
@@ -36,10 +37,10 @@ def add_question():
         correct_answer = [option1, option2, option3, option4][int(correct_answer_index) - 1]
 
         cursor.execute("""
-            INSERT INTO question 
-            (ExamID, QuestionText, Option1, Option2, Option3, Option4, CorrectAnswer, Marks) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (exam_id, question_text, option1, option2, option3, option4, correct_answer, marks))
+    INSERT INTO question 
+    (ExamID, QuestionText, Option1, Option2, Option3, Option4, CorrectAnswer, Marks) 
+    VALUES (NULL, %s, %s, %s, %s, %s, %s, %s)
+""", (question_text, option1, option2, option3, option4, correct_answer, marks))
 
         db.commit()
         return jsonify({"success": True, "message": "Question added successfully."})
@@ -129,18 +130,39 @@ def launch_test():
     try:
         data = request.get_json()
         test_name = data.get("test_name")
+        question_ids = data.get("question_ids")
 
         if not test_name:
             return jsonify({"success": False, "message": "Test name is required."}), 400
 
-        # Insert the test into the available tests table
+        if not question_ids or not all(str(q_id).isdigit() for q_id in question_ids):
+            return jsonify({"success": False, "message": "Question IDs must be a list of integers."}), 400
+
+        # 1. Insert test into available_tests
         cursor.execute("INSERT INTO available_tests (test_name, launch_date) VALUES (%s, NOW())", (test_name,))
         db.commit()
 
-        return jsonify({"success": True, "message": "Test launched successfully."})
+        # 2. Fetch the newly created test ID
+        cursor.execute("SELECT id FROM available_tests WHERE test_name = %s ORDER BY id DESC LIMIT 1", (test_name,))
+        test_id_row = cursor.fetchone()
+
+        if not test_id_row:
+            return jsonify({"success": False, "message": "Failed to fetch new test ID."}), 500
+
+        new_test_id = test_id_row['id']
+
+        # 3. Update ExamID for selected questions
+        format_strings = ','.join(['%s'] * len(question_ids))
+        sql = f"UPDATE question SET ExamID = %s WHERE QuestionID IN ({format_strings})"
+        cursor.execute(sql, tuple([new_test_id] + [int(q) for q in question_ids]))
+        db.commit()
+
+        return jsonify({"success": True, "message": "Test launched and questions assigned successfully."})
+
     except Exception as e:
         print("❌ Error launching test:", e)
-        return jsonify({"success": False, "message": "An error occurred while launching the test."}), 500
+        return jsonify({"success": False, "message": str(e)}), 500
+
 
 @app.route("/available_tests", methods=["GET"])
 def get_available_tests():
