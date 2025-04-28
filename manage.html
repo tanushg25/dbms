@@ -162,55 +162,54 @@
 
     <script>
         function addUser() {
-            const username = document.getElementById("username").value;
-            const email = document.getElementById("email").value;
-            const role = document.getElementById("role").value;
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const role = document.getElementById("role").value;
 
-            if (username && email && role) {
-                const table = document.getElementById("userTable").getElementsByTagName("tbody")[0];
-                const newRow = table.insertRow();
-
-                newRow.innerHTML = `
-                    <td>${username}</td>
-                    <td>${email}</td>
-                    <td>${role}</td>
-                    <td>
-                        <button class="btn btn-edit" onclick="editUser(this)">Edit</button>
-                        <button class="btn btn-delete" onclick="deleteUser(this)">Delete</button>
-                    </td>
-                `;
-
-                document.getElementById("username").value = "";
-                document.getElementById("email").value = "";
-                document.getElementById("role").value = "";
-            } else {
-                alert("Please fill in all fields.");
+    if (username && email && role) {
+        // Send the data to the Flask backend using Fetch API
+        fetch('http://127.0.0.1:5000/addUser', {
+            method: 'POST',
+            body: new URLSearchParams({
+                'username': username,
+                'email': email,
+                'role': role
+            }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
-        }
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);  // Show success or error message from the server
+            addRowToTable(username, email, role);  // Optionally, reload the table
+            document.getElementById("username").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("role").value = "";
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    } else {
+        alert("Please fill in all fields.");
+    }
+}
 
-        function deleteUser(button) {
-            const row = button.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-        }
+function addRowToTable(username, email, role) {
+    const table = document.getElementById("userTable").getElementsByTagName("tbody")[0];
+    const newRow = table.insertRow();
+    newRow.innerHTML = `
+        <td>${username}</td>
+        <td>${email}</td>
+        <td>${role}</td>
+        <td>
+            <button class="btn btn-edit" onclick="editUser(this)">Edit</button>
+            <button class="btn btn-delete" onclick="deleteUser(this)">Delete</button>
+        </td>
+    `;
+}
 
-        function editUser(button) {
-            const row = button.parentNode.parentNode;
-            const username = row.cells[0].innerHTML;
-            const email = row.cells[1].innerHTML;
-            const role = row.cells[2].innerHTML;
 
-            const newUsername = prompt("Edit Username:", username);
-            const newEmail = prompt("Edit Email:", email);
-            const newRole = prompt("Edit Role:", role);
-
-            if (newUsername && newEmail && newRole) {
-                row.cells[0].innerHTML = newUsername;
-                row.cells[1].innerHTML = newEmail;
-                row.cells[2].innerHTML = newRole;
-            } else {
-                alert("All fields are required for editing.");
-            }
-        }
     </script>
 </body>
 </html>

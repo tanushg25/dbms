@@ -102,32 +102,56 @@
     </div>
 
     <script>
-        function enableMaintenance() {
-            const confirmation = confirm("Are you sure you want to activate maintenance mode?");
-            if (confirmation) {
-                document.getElementById("statusMessage").textContent = "Maintenance mode activated successfully!";
-                alert("The system is now in maintenance mode.");
-                // Backend integration logic for maintenance mode goes here
-            }
+async function enableMaintenance() {
+    const confirmation = confirm("Are you sure you want to activate maintenance mode?");
+    if (confirmation) {
+        try {
+            const response = await fetch('http://localhost:3306/api/enable-maintenance', {
+                method: 'POST'
+            });
+            const data = await response.json();
+            document.getElementById("statusMessage").textContent = data.message;
+            alert(data.message);
+        } catch (error) {
+            alert("Failed to enable maintenance mode.");
         }
+    }
+}
 
-        function initiateBackup() {
-            const confirmation = confirm("Are you sure you want to start a backup?");
-            if (confirmation) {
-                document.getElementById("statusMessage").textContent = "Backup initiated successfully!";
-                alert("The system backup process has started.");
-                // Backend integration logic for backup goes here
-            }
-        }
 
-        function restoreSystem() {
-            const confirmation = confirm("Are you sure you want to restore the system?");
-            if (confirmation) {
-                document.getElementById("statusMessage").textContent = "System restored successfully!";
-                alert("The system has been restored.");
-                // Backend integration logic for system restore goes here
-            }
+async function initiateBackup() {
+    const confirmation = confirm("Are you sure you want to start a backup?");
+    if (confirmation) {
+        try {
+            const response = await fetch('http://localhost:3306/api/initiate-backup', {
+                method: 'POST'
+            });
+            const data = await response.json();
+            document.getElementById("statusMessage").textContent = data.message;
+            alert(data.message);
+        } catch (error) {
+            alert("Failed to start backup.");
         }
+    }
+}
+
+
+async function restoreSystem() {
+    const confirmation = confirm("Are you sure you want to restore the system?");
+    if (confirmation) {
+        try {
+            const response = await fetch('http://localhost:3306/api/restore-system', {
+                method: 'POST'
+            });
+            const data = await response.json();
+            document.getElementById("statusMessage").textContent = data.message;
+            alert(data.message);
+        } catch (error) {
+            alert("Failed to restore system.");
+        }
+    }
+}
+
     </script>
 </body>
 </html>

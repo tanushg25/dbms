@@ -7,6 +7,7 @@
     <style>
         body {
             font-family: sans-serif;
+
             margin: 0;
             background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-wallpaper-background_58702-2460.jpg');
             background-repeat: no-repeat;
@@ -164,10 +165,26 @@
         }
 
         function cancelExam(examName) {
-            if (confirm(`Are you sure you want to cancel the exam: ${examName}?`)) {
-                alert(`Exam ${examName} has been canceled.`);
-            }
-        }
+    if (confirm(`Are you sure you want to cancel the exam: ${examName}?`)) {
+        fetch('/cancel-exam', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ exam_name: examName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload(); // Reload the page after the exam is canceled
+        })
+        .catch(error => {
+            alert('Error canceling the exam.');
+            console.error(error);
+        });
+    }
+}
+
 
         function viewExamResults(examName) {
             alert(`Viewing results for ${examName}.`);
